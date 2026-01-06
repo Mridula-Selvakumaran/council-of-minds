@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="dark" lang="en"><head>
 <meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<meta content="width=device-width, initial-scale=1.5" name="viewport"/>
 <title>Council of Minds Debate Interface</title>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
@@ -180,7 +180,7 @@
 </div>
 </div>
 </div>
-<div class="w-full max-w-4xl relative z-30 mt-6 mb-4 flex flex-col gap-4">
+<div id="finalPanel" style="display: none;" class="w-full max-w-4xl relative z-30 mt-6 mb-4 flex flex-col gap-4">
 <div class="flex justify-center gap-4 mb-2">
 <button class="px-6 py-2 rounded-t-lg bg-surface-dark border-x border-t border-primary/30 text-primary font-pixel text-[10px] uppercase tracking-wider hover:bg-primary/10 transition-colors shadow-[0_-5px_15px_rgba(127,13,242,0.1)]">
                 Synthesis View
@@ -191,14 +191,14 @@
 </div>
 <div class="flex items-center justify-between px-4">
 <div class="flex items-center gap-2">
-<div class="w-2 h-2 bg-council-amber rounded-full animate-pulse"></div>
-<span class="font-pixel text-[10px] text-council-amber uppercase">Claude is analyzing...</span>
+<div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+<span class="font-pixel text-[10px] text-green-400 uppercase">Analysis Complete</span>
 </div>
 <div class="flex gap-1">
-<div class="w-8 h-1 bg-council-teal/50"></div>
-<div class="w-8 h-1 bg-council-amber animate-pulse"></div>
-<div class="w-8 h-1 bg-white/10"></div>
-<div class="w-8 h-1 bg-white/10"></div>
+<div class="w-8 h-1 bg-council-teal"></div>
+<div class="w-8 h-1 bg-council-amber"></div>
+<div class="w-8 h-1 bg-council-blue"></div>
+<div class="w-8 h-1 bg-council-pink"></div>
 </div>
 </div>
 <div class="w-full bg-surface-dark border-2 border-primary/30 rounded-xl p-6 shadow-[0_0_30px_rgba(127,13,242,0.1)] backdrop-blur-xl relative overflow-hidden group hover:border-primary/60 transition-colors duration-500">
@@ -216,12 +216,8 @@
 <div class="flex-1">
 <h2 class="text-white font-pixel text-xs md:text-sm mb-3 text-primary uppercase tracking-wide">Final Determination</h2>
 <p class="text-gray-300 leading-relaxed font-display text-sm md:text-base border-l-2 border-primary/30 pl-4">
-                        After deliberating, the council suggests that the solution involves a multi-faceted approach. While <span class="text-council-amber font-bold">Claude</span> emphasized ethical constraints and <span class="text-council-pink font-bold">Grok</span> challenged the premise (sus), the consensus aligns with a hybrid model proposed by <span class="text-council-teal font-bold">ChatGPT</span>, verified by <span class="text-council-blue font-bold">Gemini</span>.
+                        Loading final synthesis...
                     </p>
-<div class="mt-4 flex items-center gap-2 text-[10px] text-white/30 font-pixel bg-black/20 p-2 rounded">
-<span class="material-symbols-outlined text-sm">link</span>
-<span>GROK DISAGREED ON POINT 3.4 // RESOLVED</span>
-</div>
 </div>
 </div>
 </div>
@@ -246,5 +242,5 @@
 </div>
 </main>
 <div class="fixed bottom-0 left-0 w-full h-1/4 bg-gradient-to-t from-background-dark via-background-dark/90 to-transparent pointer-events-none z-0"></div>
-<script src="frontend/app.js"></script>
+<script src="app.js"></script>
 </body></html>

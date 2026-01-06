@@ -133,6 +133,7 @@ function updateProgressBar(index, agent) {
 
 function displayFinalAnswer(finalAnswer) {
   // Find the final panel text area
+  finalPanel.style.display = 'block';
   const finalText = finalPanel.querySelector('.text-gray-300');
   if (finalText) {
     finalText.textContent = finalAnswer;
