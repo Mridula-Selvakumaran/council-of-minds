@@ -34,6 +34,11 @@ window.addEventListener('load', () => {
     finalPanel: !!finalPanel
   });
 
+  // Log available data-agent attributes for debugging
+  const availableBubbles = Array.from(document.querySelectorAll('[data-agent]'))
+    .map(b => b.getAttribute('data-agent'));
+  console.log('Available agent bubbles:', availableBubbles);
+
   // Submit handlers
   if (submitBtn) {
     submitBtn.addEventListener('click', submitQuery);
@@ -83,7 +88,7 @@ window.addEventListener('load', () => {
       });
 
       if (!response.ok) {
-        throw new Error(`HTTP ${response.status}`);
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       }
       
       const data = await response.json();
@@ -100,6 +105,7 @@ window.addEventListener('load', () => {
     } catch (error) {
       console.error('❌ Error:', error);
       statusText.textContent = 'ERROR: CONNECTION FAILED';
+      alert(`Failed to connect to backend: ${error.message}\n\nMake sure the server is running on port 3000.`);
     } finally {
       input.disabled = false;
       submitBtn.disabled = false;
@@ -184,6 +190,7 @@ window.addEventListener('load', () => {
     
     if (!bubble) {
       console.error(`❌ Bubble not found for ${agentName}`);
+      console.log('Available bubbles:', availableBubbles);
       return;
     }
     
@@ -204,6 +211,7 @@ window.addEventListener('load', () => {
     
     if (!bubble) {
       console.error(`❌ Bubble not found for ${agentName}`);
+      console.log('Available bubbles:', availableBubbles);
       return;
     }
     
@@ -241,7 +249,7 @@ window.addEventListener('load', () => {
     }
     
     // Show the panel
-    finalPanel.style.display = 'block';
+    finalPanel.style.display = 'flex';
     
     // Update text
     const finalText = finalPanel.querySelector('.text-gray-300');
@@ -257,7 +265,9 @@ window.addEventListener('load', () => {
     }
     
     // Scroll
-    finalPanel.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    setTimeout(() => {
+      finalPanel.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 300);
   }
 
   function sleep(ms) {
