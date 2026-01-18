@@ -7,6 +7,8 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
+const model = process.env.GPT_MODEL;
+
 /**
  * Call GPT-4 with a given system prompt and user query
  * @param {string} systemPrompt - The system prompt defining GPT's role
@@ -16,7 +18,7 @@ const openai = new OpenAI({
 export async function callGPT(systemPrompt, userMessage) {
   try {
     const response = await openai.chat.completions.create({
-      model: 'gpt-4-turbo-preview', // or 'gpt-4' or 'gpt-3.5-turbo'
+      model,
       messages: [
         { role: 'system', content: systemPrompt },
         { role: 'user', content: userMessage }

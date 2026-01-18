@@ -14,7 +14,7 @@ const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY);
 export async function callGemini(systemPrompt, userMessage) {
   try {
     const model = genAI.getGenerativeModel({ 
-      model: 'gemini-pro',
+      model: process.env.GEMINI_MODEL || 'gemini-1.5-flash',
       systemInstruction: systemPrompt,
     });
 
@@ -23,6 +23,7 @@ export async function callGemini(systemPrompt, userMessage) {
     return response.text();
   } catch (error) {
     console.error('Gemini API Error:', error.message);
+    console.error('Full error:', error);
     throw new Error(`Gemini failed: ${error.message}`);
   }
 }

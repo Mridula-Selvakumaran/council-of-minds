@@ -1,7 +1,6 @@
 import { callGPT } from '../agents/gpt.js';
-import { callClaude } from '../agents/claude.js';
 import { callGemini } from '../agents/gemini.js';
-import { callGrok } from '../agents/grok.js';
+import { callMistral } from '../agents/mistral.js';
 import { initiatorPrompt } from '../prompts/initiator.js';
 import { criticPrompt } from '../prompts/critic.js';
 import { verifierPrompt } from '../prompts/verifier.js';
@@ -28,66 +27,66 @@ export async function runPipeline(query) {
       timestamp: Date.now() - startTime,
     });
 
-    // Step 2: Claude as Critic
-    console.log('[PIPELINE] Step 2/5: Claude Critic...');
-    const claudeCritic = await callClaude(
+    // Step 2: Gemini as Critic (displayed as "Claude" in frontend)
+    console.log('[PIPELINE] Step 2/5: Claude Critic (actually Gemini)...');
+    const claudeCritic = await callGemini(
       criticPrompt,
       `Original Query: "${query}"\n\nInitial Answer:\n${gptInitiator}\n\nProvide your critique.`
     );
     responses.push({
-      agent: 'CLAUDE',
+      agent: 'CLAUDE', // Frontend shows "Claude" but it's Gemini
       role: 'CRITIC',
       content: claudeCritic,
       timestamp: Date.now() - startTime,
     });
 
-    // Step 3: Gemini as Verifier
-    console.log('[PIPELINE] Step 3/5: Gemini Verifier...');
-    const geminiVerifier = await callGemini(
-      verifierPrompt,
-      `Original Query: "${query}"\n\nInitial Answer:\n${gptInitiator}\n\nCritique:\n${claudeCritic}\n\nFact-check the claims and provide verification.`
+    // Step 3: Gemini as Synthesizer
+    console.log('[PIPELINE] Step 3/5: Gemini Synthesizer...');
+    const geminiSynthesizer = await callGemini(
+      synthesizerPrompt,
+      `Original Query: "${query}"\n\nInitial Answer:\n${gptInitiator}\n\nCritique:\n${claudeCritic}\n\nSynthesize the debate and provide your take.`
     );
     responses.push({
       agent: 'GEMINI',
-      role: 'VERIFIER',
-      content: geminiVerifier,
+      role: 'SYNTHESIZER',
+      content: geminiSynthesizer,
       timestamp: Date.now() - startTime,
     });
 
-    // Step 4: Grok as Synthesizer
-    console.log('[PIPELINE] Step 4/5: Grok Synthesizer...');
-    const grokSynthesizer = await callGrok(
-      synthesizerPrompt,
-      `Original Query: "${query}"\n\nInitial Answer:\n${gptInitiator}\n\nCritique:\n${claudeCritic}\n\nFact-Check:\n${geminiVerifier}\n\nSynthesize the debate and provide your take.`
+    // Step 4: Mistral as Verifier
+    console.log('[PIPELINE] Step 4/5: Mistral Verifier...');
+    const mistralVerifier = await callMistral(
+      verifierPrompt,
+      `Original Query: "${query}"\n\nInitial Answer:\n${gptInitiator}\n\nCritique:\n${claudeCritic}\n\nSynthesis:\n${geminiSynthesizer}\n\nFact-check the claims and provide verification.`
     );
     responses.push({
-      agent: 'GROK',
-      role: 'SYNTHESIZER',
-      content: grokSynthesizer,
+      agent: 'MISTRAL',
+      role: 'VERIFIER',
+      content: mistralVerifier,
       timestamp: Date.now() - startTime,
     });
 
-    // Step 5: GPT as Final Synthesizer
-    console.log('[PIPELINE] Step 5/5: GPT Final Synthesis...');
+    // Step 5: GPT as Final Synthesizer (HIDDEN from user)
+    console.log('[PIPELINE] Step 5/5: GPT Final Synthesis (hidden)...');
     const gptFinal = await callGPT(
       finalSynthesizerPrompt,
-      `Original Query: "${query}"\n\nFull Debate History:\n\n1. Initial Answer:\n${gptInitiator}\n\n2. Critique:\n${claudeCritic}\n\n3. Fact-Check:\n${geminiVerifier}\n\n4. Synthesis:\n${grokSynthesizer}\n\nCreate the final, polished answer (DO NOT mention AI names).`
+      `Original Query: "${query}"\n\nFull Debate History:\n\n1. Initial Answer:\n${gptInitiator}\n\n2. Critique:\n${claudeCritic}\n\n3. Synthesis:\n${geminiSynthesizer}\n\n4. Verification:\n${mistralVerifier}\n\nCreate the final, polished answer (DO NOT mention AI names).`
     );
 
     const totalTime = Date.now() - startTime;
-    console.log(`[PIPELINE] ✅ Complete in ${(totalTime / 1000).toFixed(2)}s`);
+    console.log(`[PIPELINE] Complete in ${(totalTime / 1000).toFixed(2)}s`);
 
     return {
       query,
-      responses,
-      finalAnswer: gptFinal,
+      responses, // Contains: GPT, CLAUDE (Gemini), GEMINI, MISTRAL
+      finalAnswer: gptFinal, // Hidden GPT synthesis - only answer shown
       metadata: {
         totalTime,
         completedAt: new Date().toISOString(),
       },
     };
   } catch (error) {
-    console.error('[PIPELINE] ❌ Error:', error.message);
+    console.error('[PIPELINE] Error:', error.message);
     throw error;
   }
 }
