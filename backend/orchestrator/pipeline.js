@@ -1,11 +1,13 @@
 import { callGPT } from '../agents/gpt.js';
 import { callGemini } from '../agents/gemini.js';
-import { callMistral } from '../agents/mistral.js';
 import { initiatorPrompt } from '../prompts/initiator.js';
 import { criticPrompt } from '../prompts/critic.js';
 import { verifierPrompt } from '../prompts/verifier.js';
 import { synthesizerPrompt } from '../prompts/synthesizer.js';
 import { finalSynthesizerPrompt } from '../prompts/finalSynthesizer.js';
+
+// Helper function to add delays between API calls
+const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
 /**
  * Run the complete multi-agent debate pipeline
@@ -27,6 +29,8 @@ export async function runPipeline(query) {
       timestamp: Date.now() - startTime,
     });
 
+    await delay(1000); // Wait 1 second before next Gemini call
+
     // Step 2: Gemini as Critic (displayed as "Claude" in frontend)
     console.log('[PIPELINE] Step 2/5: Claude Critic (actually Gemini)...');
     const claudeCritic = await callGemini(
@@ -39,6 +43,8 @@ export async function runPipeline(query) {
       content: claudeCritic,
       timestamp: Date.now() - startTime,
     });
+
+    await delay(1000); // Wait 1 second before next Gemini call
 
     // Step 3: Gemini as Synthesizer
     console.log('[PIPELINE] Step 3/5: Gemini Synthesizer...');
@@ -53,18 +59,22 @@ export async function runPipeline(query) {
       timestamp: Date.now() - startTime,
     });
 
-    // Step 4: Mistral as Verifier
-    console.log('[PIPELINE] Step 4/5: Mistral Verifier...');
-    const mistralVerifier = await callMistral(
+    await delay(1000); // Wait 1 second before next Gemini call
+
+    // Step 4: Gemini as Verifier (displayed as "Mistral" in frontend)
+    console.log('[PIPELINE] Step 4/5: Mistral Verifier (actually Gemini)...');
+    const mistralVerifier = await callGemini(
       verifierPrompt,
       `Original Query: "${query}"\n\nInitial Answer:\n${gptInitiator}\n\nCritique:\n${claudeCritic}\n\nSynthesis:\n${geminiSynthesizer}\n\nFact-check the claims and provide verification.`
     );
     responses.push({
-      agent: 'MISTRAL',
+      agent: 'MISTRAL', // Frontend shows "Mistral" but it's Gemini
       role: 'VERIFIER',
       content: mistralVerifier,
       timestamp: Date.now() - startTime,
     });
+
+    await delay(1000); // Wait 1 second before final GPT call
 
     // Step 5: GPT as Final Synthesizer (HIDDEN from user)
     console.log('[PIPELINE] Step 5/5: GPT Final Synthesis (hidden)...');
@@ -78,7 +88,7 @@ export async function runPipeline(query) {
 
     return {
       query,
-      responses, // Contains: GPT, CLAUDE (Gemini), GEMINI, MISTRAL
+      responses, // Contains: GPT, CLAUDE (Gemini), GEMINI, MISTRAL (Gemini)
       finalAnswer: gptFinal, // Hidden GPT synthesis - only answer shown
       metadata: {
         totalTime,
