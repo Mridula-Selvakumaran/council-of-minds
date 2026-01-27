@@ -6,7 +6,7 @@ let debateHistory = [];
 
 // Agent colors
 const agentColors = {
-  GPT: 'bg-council-teal',
+  GPT: 'bg-council-teal', 
   CLAUDE: 'bg-council-amber',
   GEMINI: 'bg-council-blue',
   MISTRAL: 'bg-council-pink'
